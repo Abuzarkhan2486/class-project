@@ -1,8 +1,10 @@
 import { Router } from "express";
-import route from "./folders/index.js"
+import folderroute from "./folders/index.js"
+import fileroute from "./files/index.js"
 
 const router= Router()
 
-router.use("/folder",route)
+router.use("/folder",folderroute)
+router.use("/file",fileroute)
 
 export default router
