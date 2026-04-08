@@ -1,22 +1,66 @@
-import { error } from "console"
-import fs from "fs"
-import { internalError, success } from "../../utils/response.utils"
+import fs from "fs";
+import path from "path";
+import { internalError, success } from "../../utils/response.utils.js";
 
 export const createFolder = async (req, res) => {
+  try {
+    const BASE_DIR = path.resolve(process.cwd(), "uploads");
+    const { folderName } = req.body;
 
-    const { folderName } = req.body
-
-
-    if (folderName) {
-        fs.mkdir(`./${folderName}`, { recursive: true }, (error) => {
-            if (error) {
-                return res.status(500).json({
-                    message:"sometghing wrong"
-                })
-            }
-        })
+    if (!folderName) {
+      return res.status(400).json({
+        message: "Folder name is required",
+      });
     }
 
-return success(res,'asjfhjshf');
+    // ✅ Full absolute path
+    const folderPath = path.resolve(BASE_DIR, folderName);
 
-}
+    fs.mkdir(folderPath, { recursive: true }, (error) => {
+      if (error) {
+        return internalError(res, error.message);
+      }
+
+      return success(res, "Folder created successfully");
+    });
+  } catch (err) {
+    return internalError(res, err.message);
+  }
+};
+
+
+
+
+export const deleteFolder = async (req, res) => {
+  try {
+    const BASE_DIR = path.resolve(process.cwd(), "uploads");
+    const { folderName } = req.body;
+
+    if (!folderName) {
+      return res.status(400).json({
+        message: "Folder name is required",
+      });
+    }
+
+    // ✅ Full absolute path
+    const folderPath = path.resolve(BASE_DIR, folderName);
+
+    // Check if folder exists
+    if (!fs.existsSync(folderPath)) {
+      return res.status(404).json({
+        message: "Folder not found",
+      });
+    }
+
+    // ✅ Delete folder (even if it has files inside)
+    fs.rm(folderPath, { recursive: true, force: true }, (error) => {
+      if (error) {
+        return internalError(res, error.message);
+      }
+
+      return success(res, "Folder deleted successfully");
+    });
+  } catch (err) {
+    return internalError(res, err.message);
+  }
+};

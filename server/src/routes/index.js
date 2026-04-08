@@ -1,8 +1,8 @@
 import { Router } from "express";
-import route from "./folders/index"
+import route from "./folders/index.js"
 
-const route= Router()
+const router= Router()
 
-route.use("/folder",route)
+router.use("/folder",route)
 
-export default route
+export default router
